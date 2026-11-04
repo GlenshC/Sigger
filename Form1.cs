@@ -8,7 +8,8 @@ namespace Sigger
 {
     public partial class Form1 : Form
     {
-        private const string ModelCachePath = "model_cache.json";
+        private const string ModelCacheDir = "model_cache";
+        private const string DefaultModelCachePath = "model_cache/model_cache_0p01_256_64_100.json";
         private const string TrainCsvPath = @"data\mnist_train.csv";
         private const string TestCsvPath = @"data\mnist_test.csv";
 
@@ -30,6 +31,34 @@ namespace Sigger
             InitializeDrawCanvas();
         }
 
+        private void LoadCacheIfExists()
+        {
+            // Try to load the default cache first, then fall back to any cache file
+            string[] cacheFiles = new[] { DefaultModelCachePath };
+            if (Directory.Exists(ModelCacheDir))
+            {
+                cacheFiles = cacheFiles.Concat(Directory.GetFiles(ModelCacheDir, "model_cache_*.json")).ToArray();
+            }
+
+            foreach (var cachePath in cacheFiles)
+            {
+                if (File.Exists(cachePath))
+                {
+                    try
+                    {
+                        _model = MLP.Load(cachePath);
+                        Log($"Loaded cached model: {_model.InputSize}→{_model.HiddenSize}→{_model.OutputSize} from {cachePath}");
+                        btnTest.Enabled = true;
+                        return;
+                    }
+                    catch (Exception ex)
+                    {
+                        Log($"Failed to load cache {cachePath}: {ex.Message}");
+                    }
+                }
+            }
+        }
+
         private void WireEvents()
         {
             // Train tab
@@ -48,23 +77,6 @@ namespace Sigger
 
             // Form closing
             FormClosing += Form1_FormClosing;
-        }
-
-        private void LoadCacheIfExists()
-        {
-            if (File.Exists(ModelCachePath))
-            {
-                try
-                {
-                    _model = MLP.Load(ModelCachePath);
-                    Log($"Loaded cached model: {_model.InputSize}→{_model.HiddenSize}→{_model.OutputSize}");
-                    btnTest.Enabled = true;
-                }
-                catch (Exception ex)
-                {
-                    Log($"Failed to load cache: {ex.Message}");
-                }
-            }
         }
 
         private void InitializeDrawCanvas()
@@ -267,9 +279,12 @@ namespace Sigger
                     cancellationToken: token
                 ), token);
 
-                // Save cache
-                _model.Save(ModelCachePath);
-                Log($"Training complete. Model saved to {ModelCachePath}");
+                // Save cache with hyperparameter-specific filename
+                string lrStr = learningRate.ToString("G17").Replace(".", "p").Replace("E", "e").Replace("+", "").Replace("-", "n");
+                string cachePath = Path.Combine(ModelCacheDir, $"model_cache_{lrStr}_{hiddenSize}_{batchSize}_{epochs}.json");
+                Directory.CreateDirectory(ModelCacheDir);
+                _model.Save(cachePath);
+                Log($"Training complete. Model saved to {cachePath}");
 
                 btnTest.Enabled = true;
             }
@@ -338,11 +353,15 @@ namespace Sigger
 
         private void BtnClearCache_Click(object? sender, EventArgs e)
         {
-            if (File.Exists(ModelCachePath))
+            if (Directory.Exists(ModelCacheDir))
             {
-                File.Delete(ModelCachePath);
+                var files = Directory.GetFiles(ModelCacheDir, "model_cache_*.json");
+                foreach (var f in files)
+                {
+                    File.Delete(f);
+                }
                 _model = null;
-                Log("Cache cleared.");
+                Log($"Cache cleared ({files.Length} files).");
                 btnTest.Enabled = false;
             }
         }

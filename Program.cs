@@ -17,7 +17,7 @@ namespace Sigger
     {
         private const string TrainCsvPath = @"data\mnist_train.csv";
         private const string TestCsvPath = @"data\mnist_test.csv";
-        private const string ModelCachePath = "model_cache.json";
+        private const string ModelCacheDir = "model_cache";
         private const string ResultsDir = "results";
 
         [STAThread]
@@ -122,12 +122,16 @@ namespace Sigger
                 Log($"  Test:  {dataset.TestX.GetLength(0)} samples");
                 Log($"  Classes: {dataset.NumClasses}");
 
+                // Generate cache path based on hyperparameters
+                string lrStr = learningRate.ToString("G17").Replace(".", "p").Replace("E", "e").Replace("+", "").Replace("-", "n");
+                string modelCachePath = Path.Combine(ModelCacheDir, $"model_cache_{lrStr}_{hiddenSize}_{batchSize}_{epochs}.json");
+
                 // Create or load model
                 MLP model;
-                if (File.Exists(ModelCachePath) && !runTrain)
+                if (File.Exists(modelCachePath) && !runTrain)
                 {
                     Log("Loading cached model...");
-                    model = MLP.Load(ModelCachePath);
+                    model = MLP.Load(modelCachePath);
                     Log($"Model: {model.InputSize} → {model.HiddenSize} → {model.OutputSize}");
                 }
                 else
@@ -156,8 +160,9 @@ namespace Sigger
                     Log($"Final loss: {losses[^1]:F4}");
 
                     // Save cache
-                    model.Save(ModelCachePath);
-                    Log($"Model saved to {ModelCachePath}");
+                    Directory.CreateDirectory(ModelCacheDir);
+                    model.Save(modelCachePath);
+                    Log($"Model saved to {modelCachePath}");
                 }
 
                 if (runTest || (!runTrain && args.Length == 0))
