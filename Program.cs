@@ -2,6 +2,9 @@ using Sigger.Data;
 using Sigger.NeuralNetwork;
 using Sigger.Math;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
+using System.Text.Json;
 using System.Windows.Forms;
 
 namespace Sigger
@@ -15,6 +18,7 @@ namespace Sigger
         private const string TrainCsvPath = @"data\mnist_train.csv";
         private const string TestCsvPath = @"data\mnist_test.csv";
         private const string ModelCachePath = "model_cache.json";
+        private const string ResultsDir = "results";
 
         [STAThread]
         static void Main(string[] args)
@@ -78,93 +82,180 @@ namespace Sigger
 
         static void RunCli(string[] args, bool runTrain, bool runTest, int epochs, double learningRate, int batchSize, int hiddenSize)
         {
-            Console.WriteLine("=== Sigger CLI ===");
-            Console.WriteLine();
+            var log = new List<LogEntry>();
+            string phase = runTrain ? "TRAIN" : "TEST";
 
-            // Load data
-            Console.WriteLine("Loading dataset...");
-            var sw = Stopwatch.StartNew();
-            var dataset = DataLoader.Load(TrainCsvPath, TestCsvPath, valSplit: 0.1, seed: 42);
-            sw.Stop();
-            Console.WriteLine($"Data loaded in {sw.ElapsedMilliseconds}ms:");
-            Console.WriteLine($"  Train: {dataset.TrainX.GetLength(0)} samples");
-            Console.WriteLine($"  Val:   {dataset.ValX.GetLength(0)} samples");
-            Console.WriteLine($"  Test:  {dataset.TestX.GetLength(0)} samples");
-            Console.WriteLine($"  Classes: {dataset.NumClasses}");
-            Console.WriteLine();
+            // Redirect console output to capture logs
+            var originalOut = Console.Out;
+            using var stringWriter = new StringWriter();
+            Console.SetOut(stringWriter);
 
-            // Create or load model
-            MLP model;
-            if (File.Exists(ModelCachePath) && !runTrain)
+            // Also write to console in real-time
+            var teeWriter = new TeeWriter(originalOut, stringWriter);
+            Console.SetOut(teeWriter);
+
+            void Log(string message, string level = "INFO")
             {
-                Console.WriteLine("Loading cached model...");
-                model = MLP.Load(ModelCachePath);
-                Console.WriteLine($"Model: {model.InputSize} → {model.HiddenSize} → {model.OutputSize}");
-            }
-            else
-            {
-                model = new MLP(dataset.InputSize, hiddenSize, dataset.NumClasses, seed: 42);
-                Console.WriteLine($"Model created: {dataset.InputSize} → {hiddenSize} → {dataset.NumClasses}");
-                Console.WriteLine($"Hyperparams: LR={learningRate}, Batch={batchSize}, Epochs={epochs}");
-                Console.WriteLine();
-
-                // Train
-                Console.WriteLine("Starting training...");
-                sw.Restart();
-                var losses = model.Train(
-                    dataset.TrainX, dataset.TrainY,
-                    epochs, batchSize, learningRate,
-                    dataset.ValX, dataset.ValY,
-                    onEpochEnd: (epoch, loss, valLoss) =>
-                    {
-                        var msg = valLoss.HasValue
-                            ? $"Epoch {epoch:D3}/{epochs}: Loss={loss:F4}, ValLoss={valLoss.Value:F4}"
-                            : $"Epoch {epoch:D3}/{epochs}: Loss={loss:F4}";
-                        Console.WriteLine($"  {msg}");
-                    },
-                    earlyStopPatience: 15
-                );
-                sw.Stop();
-                Console.WriteLine($"\nTraining complete in {sw.Elapsed.TotalSeconds:F1}s");
-                Console.WriteLine($"Final loss: {losses[^1]:F4}");
-
-                // Save cache
-                model.Save(ModelCachePath);
-                Console.WriteLine($"Model saved to {ModelCachePath}");
-            }
-
-            if (runTest || args.Length == 0)
-            {
-                Console.WriteLine();
-                Console.WriteLine("=== Evaluation ===");
-
-                // Validation accuracy
-                sw.Restart();
-                double valAcc = model.EvaluateAccuracy(dataset.ValX, dataset.ValLabels);
-                sw.Stop();
-                Console.WriteLine($"Validation Accuracy: {valAcc:P2} (in {sw.ElapsedMilliseconds}ms)");
-
-                // Test accuracy
-                sw.Restart();
-                double testAcc = model.EvaluateAccuracy(dataset.TestX, dataset.TestLabels);
-                sw.Stop();
-                Console.WriteLine($"Test Accuracy: {testAcc:P2} (in {sw.ElapsedMilliseconds}ms)");
-
-                // Per-class metrics
-                var cm = model.ConfusionMatrix(dataset.TestX, dataset.TestLabels);
-                Console.WriteLine("\nPer-Class Test Accuracy:");
-                for (int i = 0; i < dataset.NumClasses; i++)
+                var entry = new LogEntry
                 {
-                    int total = 0, correct = 0;
-                    for (int j = 0; j < dataset.NumClasses; j++)
+                    Timestamp = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff"),
+                    Level = level,
+                    Message = message
+                };
+                log.Add(entry);
+                Console.WriteLine(message);
+            }
+
+            try
+            {
+                Log("=== Sigger CLI ===");
+                Log($"Hyperparams: LR={learningRate}, Hidden={hiddenSize}, Batch={batchSize}, Epochs={epochs}");
+
+                // Load data
+                Log("Loading dataset...");
+                var sw = Stopwatch.StartNew();
+                var dataset = DataLoader.Load(TrainCsvPath, TestCsvPath, valSplit: 0.1, seed: 42);
+                sw.Stop();
+                Log($"Data loaded in {sw.ElapsedMilliseconds}ms:");
+                Log($"  Train: {dataset.TrainX.GetLength(0)} samples");
+                Log($"  Val:   {dataset.ValX.GetLength(0)} samples");
+                Log($"  Test:  {dataset.TestX.GetLength(0)} samples");
+                Log($"  Classes: {dataset.NumClasses}");
+
+                // Create or load model
+                MLP model;
+                if (File.Exists(ModelCachePath) && !runTrain)
+                {
+                    Log("Loading cached model...");
+                    model = MLP.Load(ModelCachePath);
+                    Log($"Model: {model.InputSize} → {model.HiddenSize} → {model.OutputSize}");
+                }
+                else
+                {
+                    model = new MLP(dataset.InputSize, hiddenSize, dataset.NumClasses, seed: 42);
+                    Log($"Model created: {dataset.InputSize} → {hiddenSize} → {dataset.NumClasses}");
+
+                    // Train
+                    Log("Starting training...");
+                    sw.Restart();
+                    var losses = model.Train(
+                        dataset.TrainX, dataset.TrainY,
+                        epochs, batchSize, learningRate,
+                        dataset.ValX, dataset.ValY,
+                        onEpochEnd: (epoch, loss, valLoss) =>
+                        {
+                            var msg = valLoss.HasValue
+                                ? $"Epoch {epoch:D3}/{epochs}: Loss={loss:F4}, ValLoss={valLoss.Value:F4}"
+                                : $"Epoch {epoch:D3}/{epochs}: Loss={loss:F4}";
+                            Log($"  {msg}");
+                        },
+                        earlyStopPatience: 15
+                    );
+                    sw.Stop();
+                    Log($"\nTraining complete in {sw.Elapsed.TotalSeconds:F1}s");
+                    Log($"Final loss: {losses[^1]:F4}");
+
+                    // Save cache
+                    model.Save(ModelCachePath);
+                    Log($"Model saved to {ModelCachePath}");
+                }
+
+                if (runTest || (!runTrain && args.Length == 0))
+                {
+                    Log("");
+                    Log("=== Evaluation ===");
+
+                    // Validation accuracy
+                    sw.Restart();
+                    double valAcc = model.EvaluateAccuracy(dataset.ValX, dataset.ValLabels);
+                    sw.Stop();
+                    Log($"Validation Accuracy: {valAcc:P2} (in {sw.ElapsedMilliseconds}ms)");
+
+                    // Test accuracy
+                    sw.Restart();
+                    double testAcc = model.EvaluateAccuracy(dataset.TestX, dataset.TestLabels);
+                    sw.Stop();
+                    Log($"Test Accuracy: {testAcc:P2} (in {sw.ElapsedMilliseconds}ms)");
+
+                    // Per-class metrics
+                    var cm = model.ConfusionMatrix(dataset.TestX, dataset.TestLabels);
+                    Log("\nPer-Class Test Accuracy:");
+                    var perClass = new List<PerClassMetric>();
+                    for (int i = 0; i < dataset.NumClasses; i++)
                     {
-                        total += cm[i, j];
-                        if (i == j) correct = cm[i, j];
+                        int total = 0, correct = 0;
+                        for (int j = 0; j < dataset.NumClasses; j++)
+                        {
+                            total += cm[i, j];
+                            if (i == j) correct = cm[i, j];
+                        }
+                        if (total > 0)
+                        {
+                            double acc = correct / (double)total;
+                            Log($"  {IndexToLabel(i)}: {correct}/{total} = {acc:P1}");
+                            perClass.Add(new PerClassMetric
+                            {
+                                Class = IndexToLabel(i),
+                                Correct = correct,
+                                Total = total,
+                                Accuracy = acc
+                            });
+                        }
                     }
-                    if (total > 0)
-                        Console.WriteLine($"  {IndexToLabel(i)}: {correct}/{total} = {correct / (double)total:P1}");
+
+                    // Save results to JSON
+                    SaveResults(phase, learningRate, hiddenSize, batchSize, epochs, log, perClass, valAcc, testAcc);
+                }
+                else if (runTrain)
+                {
+                    // Save training-only results
+                    SaveResults(phase, learningRate, hiddenSize, batchSize, epochs, log, new List<PerClassMetric>(), 0, 0);
                 }
             }
+            catch (Exception ex)
+            {
+                Log($"ERROR: {ex.Message}", "ERROR");
+                Log(ex.StackTrace ?? "", "ERROR");
+            }
+            finally
+            {
+                Console.SetOut(originalOut);
+            }
+        }
+
+        static void SaveResults(string phase, double lr, int hidden, int batch, int epochs, List<LogEntry> log, List<PerClassMetric> perClass, double valAcc, double testAcc)
+        {
+            Directory.CreateDirectory(ResultsDir);
+
+            string lrStr = lr.ToString("G17").Replace(".", "p").Replace("E", "e").Replace("+", "").Replace("-", "n");
+            string fileName = $"{lrStr}_{hidden}_{batch}_{epochs}_{phase}.json";
+            string filePath = Path.Combine(ResultsDir, fileName);
+
+            var result = new CliResult
+            {
+                Phase = phase,
+                Timestamp = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff"),
+                Hyperparameters = new Hyperparameters
+                {
+                    LearningRate = lr,
+                    HiddenSize = hidden,
+                    BatchSize = batch,
+                    Epochs = epochs
+                },
+                Metrics = new Metrics
+                {
+                    ValidationAccuracy = valAcc,
+                    TestAccuracy = testAcc,
+                    PerClass = perClass
+                },
+                Logs = log
+            };
+
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            string json = JsonSerializer.Serialize(result, options);
+            File.WriteAllText(filePath, json);
+
+            Console.WriteLine($"\nResults saved to: {filePath}");
         }
 
         static void RunBenchmark()
@@ -209,6 +300,79 @@ namespace Sigger
         static string IndexToLabel(int idx)
         {
             return idx.ToString();
+        }
+
+        // Tee writer to write to both console and string buffer
+        private class TeeWriter : TextWriter
+        {
+            private readonly TextWriter _writer1;
+            private readonly TextWriter _writer2;
+
+            public TeeWriter(TextWriter writer1, TextWriter writer2)
+            {
+                _writer1 = writer1;
+                _writer2 = writer2;
+            }
+
+            public override Encoding Encoding => _writer1.Encoding;
+
+            public override void Write(char value)
+            {
+                _writer1.Write(value);
+                _writer2.Write(value);
+            }
+
+            public override void Write(string? value)
+            {
+                _writer1.Write(value);
+                _writer2.Write(value);
+            }
+
+            public override void Flush()
+            {
+                _writer1.Flush();
+                _writer2.Flush();
+            }
+        }
+
+        // JSON serialization DTOs
+        private class CliResult
+        {
+            public string Phase { get; set; } = "";
+            public string Timestamp { get; set; } = "";
+            public Hyperparameters Hyperparameters { get; set; } = new();
+            public Metrics Metrics { get; set; } = new();
+            public List<LogEntry> Logs { get; set; } = new();
+        }
+
+        private class Hyperparameters
+        {
+            public double LearningRate { get; set; }
+            public int HiddenSize { get; set; }
+            public int BatchSize { get; set; }
+            public int Epochs { get; set; }
+        }
+
+        private class Metrics
+        {
+            public double ValidationAccuracy { get; set; }
+            public double TestAccuracy { get; set; }
+            public List<PerClassMetric> PerClass { get; set; } = new();
+        }
+
+        private class PerClassMetric
+        {
+            public string Class { get; set; } = "";
+            public int Correct { get; set; }
+            public int Total { get; set; }
+            public double Accuracy { get; set; }
+        }
+
+        private class LogEntry
+        {
+            public string Timestamp { get; set; } = "";
+            public string Level { get; set; } = "INFO";
+            public string Message { get; set; } = "";
         }
     }
 }
