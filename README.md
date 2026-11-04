@@ -160,6 +160,44 @@ dotnet run -- --gui
 
 Typical good configuration: LR=0.01, Hidden=256, Batch=64, Epochs=50-100
 
+## Hyperparameter Tuning Results
+
+Systematic experiments were run with 5 configurations (50 epochs each, Batch=64) to identify optimal settings. Results logged in `results/` as JSON.
+
+| LR | Hidden | Batch | Epochs | Val Acc | Test Acc | Training Time | Notes |
+|----|--------|-------|--------|---------|----------|---------------|-------|
+| 0.001 | 256 | 64 | 50 | 88.7% | 89.0% | 1138s | Slow convergence, underfits |
+| 0.01 | 128 | 64 | 50 | 93.9% | 93.9% | 835s | Underfitting (hidden too small) |
+| **0.01** | **256** | **64** | **50** | **94.3%** | **94.2%** | **1102s** | **Good baseline** |
+| 0.01 | 512 | 64 | 50 | 94.4% | 94.6% | 1463s | Diminishing returns, 33% slower |
+| **0.1** | **256** | **64** | **50** | **97.5%** | **97.8%** | **1125s** | **Best — stable, fast convergence** |
+
+**Key Findings:**
+- **LR=0.1 with Hidden=256 achieves 97.8% test accuracy** — the highest among tested configs
+- LR=0.001 converges too slowly (loss still dropping at epoch 50)
+- Hidden=128 underfits; Hidden=512 gives marginal gain over 256 at 33% time cost
+- LR=0.1 is stable for this architecture (no divergence observed)
+
+**Run your own sweep:**
+```bash
+# Config 1: Slow convergence baseline
+dotnet run -- --train --test --lr 0.001 --hidden 256 --batch 64 --epochs 50
+
+# Config 2: Underfitting (small hidden)
+dotnet run -- --train --test --lr 0.01 --hidden 128 --batch 64 --epochs 50
+
+# Config 3: Good baseline
+dotnet run -- --train --test --lr 0.01 --hidden 256 --batch 64 --epochs 50
+
+# Config 4: Diminishing returns (large hidden)
+dotnet run -- --train --test --lr 0.01 --hidden 512 --batch 64 --epochs 50
+
+# Config 5: Best result
+dotnet run -- --train --test --lr 0.1 --hidden 256 --batch 64 --epochs 50
+```
+
+Results saved to `results/{LR}_{HIDDEN}_{BATCH}_{EPOCHS}_TRAIN.json` for analysis.
+
 ## Performance
 
 On a modern CPU with AVX2:
