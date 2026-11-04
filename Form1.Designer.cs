@@ -45,6 +45,8 @@
             progressBarTraining = new ProgressBar();
             txtLog = new TextBox();
             lblLog = new Label();
+            lblModelCache = new Label();
+            cmbModelCache = new ComboBox();
             tabTest = new TabPage();
             btnEvaluate = new Button();
             dataGridConfusion = new DataGridView();
@@ -87,6 +89,8 @@
             //
             // tabTrain
             //
+            tabTrain.Controls.Add(lblModelCache);
+            tabTrain.Controls.Add(cmbModelCache);
             tabTrain.Controls.Add(lblLearningRate);
             tabTrain.Controls.Add(groupBoxHyperparams);
             tabTrain.Controls.Add(btnTrain);
@@ -103,6 +107,28 @@
             tabTrain.TabIndex = 0;
             tabTrain.Text = "Train";
             tabTrain.UseVisualStyleBackColor = true;
+            //
+            // lblModelCache
+            //
+            lblModelCache.AutoSize = true;
+            lblModelCache.Location = new Point(500, 25);
+            lblModelCache.Margin = new Padding(4, 0, 4, 0);
+            lblModelCache.Name = "lblModelCache";
+            lblModelCache.Size = new Size(105, 25);
+            lblModelCache.TabIndex = 8;
+            lblModelCache.Text = "Model Cache:";
+            //
+            // cmbModelCache
+            //
+            cmbModelCache.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            cmbModelCache.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbModelCache.FormattingEnabled = true;
+            cmbModelCache.Location = new Point(610, 22);
+            cmbModelCache.Margin = new Padding(4, 4, 4, 4);
+            cmbModelCache.Name = "cmbModelCache";
+            cmbModelCache.Size = new Size(600, 33);
+            cmbModelCache.TabIndex = 7;
+            cmbModelCache.SelectedIndexChanged += cmbModelCache_SelectedIndexChanged;
             //
             // btnClearCache
             //
@@ -480,6 +506,8 @@
 
         #endregion
 
+        private System.Windows.Forms.ComboBox cmbModelCache;
+        private System.Windows.Forms.Label lblModelCache;
         private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage tabTrain;
         private System.Windows.Forms.TabPage tabTest;

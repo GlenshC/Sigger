@@ -23,12 +23,26 @@ namespace Sigger
         private const int CanvasSize = 280; // 10x scale for 28x28
         private int _drawRadius = 12; // Brush radius (adjustable, default 12px ≈ 1.2px at 28x28)
 
-        public Form1()
+        public Form1() : this("")
+        {
+        }
+
+        public Form1(string modelPath)
         {
             InitializeComponent();
             WireEvents();
-            LoadCacheIfExists();
             InitializeDrawCanvas();
+
+            if (!string.IsNullOrEmpty(modelPath) && File.Exists(modelPath))
+            {
+                LoadSpecificModel(modelPath);
+            }
+            else
+            {
+                LoadCacheIfExists();
+            }
+
+            RefreshModelList();
         }
 
         private void LoadCacheIfExists()
@@ -59,6 +73,40 @@ namespace Sigger
             }
         }
 
+        private void LoadSpecificModel(string modelPath)
+        {
+            try
+            {
+                _model = MLP.Load(modelPath);
+                Log($"Loaded model: {_model.InputSize}→{_model.HiddenSize}→{_model.OutputSize} from {modelPath}");
+                btnTest.Enabled = true;
+            }
+            catch (Exception ex)
+            {
+                Log($"Failed to load model {modelPath}: {ex.Message}");
+            }
+        }
+
+        private void RefreshModelList()
+        {
+            if (cmbModelCache == null) return;
+
+            var files = new List<string>();
+            if (Directory.Exists(ModelCacheDir))
+            {
+                files.AddRange(Directory.GetFiles(ModelCacheDir, "model_cache_*.json")
+                    .OrderByDescending(f => File.GetLastWriteTime(f)));
+            }
+
+            cmbModelCache.Items.Clear();
+            cmbModelCache.Items.Add("(Auto-detect latest)");
+            foreach (var f in files)
+            {
+                cmbModelCache.Items.Add(f);
+            }
+            cmbModelCache.SelectedIndex = 0;
+        }
+
         private void WireEvents()
         {
             // Train tab
@@ -77,6 +125,21 @@ namespace Sigger
 
             // Form closing
             FormClosing += Form1_FormClosing;
+        }
+
+        private void cmbModelCache_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            var selected = cmbModelCache.SelectedItem as string;
+            if (string.IsNullOrEmpty(selected)) return;
+
+            if (selected != "(Auto-detect latest)" && File.Exists(selected))
+            {
+                LoadSpecificModel(selected);
+            }
+            else if (selected == "(Auto-detect latest)")
+            {
+                LoadCacheIfExists();
+            }
         }
 
         private void InitializeDrawCanvas()

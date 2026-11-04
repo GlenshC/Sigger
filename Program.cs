@@ -33,11 +33,12 @@ namespace Sigger
             double learningRate = ParseArg(args, "--lr", 0.01);
             int batchSize = ParseArg(args, "--batch", 64);
             int hiddenSize = ParseArg(args, "--hidden", 256);
+            string modelPath = ParseArg(args, "--model", "");
 
             // If no CLI args or --gui specified, run Windows Forms GUI
             if (!runTrain && !runTest && !runBenchmark && !forceGui && args.Length == 0)
             {
-                RunGui();
+                RunGui(modelPath);
                 return;
             }
 
@@ -50,11 +51,11 @@ namespace Sigger
 
             if (runTrain || runTest || forceGui || args.Length > 0)
             {
-                RunCli(args, runTrain, runTest, epochs, learningRate, batchSize, hiddenSize);
+                RunCli(args, runTrain, runTest, epochs, learningRate, batchSize, hiddenSize, modelPath);
                 return;
             }
 
-            RunGui();
+            RunGui(modelPath);
         }
 
         static int ParseArg(string[] args, string name, int defaultValue)
@@ -73,14 +74,22 @@ namespace Sigger
             return defaultValue;
         }
 
-        static void RunGui()
+        static string ParseArg(string[] args, string name, string defaultValue)
+        {
+            int idx = Array.IndexOf(args, name);
+            if (idx >= 0 && idx + 1 < args.Length)
+                return args[idx + 1];
+            return defaultValue;
+        }
+
+        static void RunGui(string modelPath = "")
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new Form1(modelPath));
         }
 
-        static void RunCli(string[] args, bool runTrain, bool runTest, int epochs, double learningRate, int batchSize, int hiddenSize)
+        static void RunCli(string[] args, bool runTrain, bool runTest, int epochs, double learningRate, int batchSize, int hiddenSize, string modelPath = "")
         {
             var log = new List<LogEntry>();
             string phase = runTrain ? "TRAIN" : "TEST";
@@ -126,16 +135,23 @@ namespace Sigger
                 string lrStr = learningRate.ToString("G17").Replace(".", "p").Replace("E", "e").Replace("+", "").Replace("-", "n");
                 string modelCachePath = Path.Combine(ModelCacheDir, $"model_cache_{lrStr}_{hiddenSize}_{batchSize}_{epochs}.json");
 
+                // Determine which model to load
+                string loadPath = !string.IsNullOrEmpty(modelPath) ? modelPath : modelCachePath;
+
                 // Create or load model
                 MLP model;
-                if (File.Exists(modelCachePath) && !runTrain)
+                if (File.Exists(loadPath) && !runTrain)
                 {
-                    Log("Loading cached model...");
-                    model = MLP.Load(modelCachePath);
+                    Log($"Loading model from {loadPath}...");
+                    model = MLP.Load(loadPath);
                     Log($"Model: {model.InputSize} → {model.HiddenSize} → {model.OutputSize}");
                 }
                 else
                 {
+                    if (!string.IsNullOrEmpty(modelPath) && !File.Exists(modelPath))
+                    {
+                        Log($"WARNING: Specified model not found: {modelPath}", "WARN");
+                    }
                     model = new MLP(dataset.InputSize, hiddenSize, dataset.NumClasses, seed: 42);
                     Log($"Model created: {dataset.InputSize} → {hiddenSize} → {dataset.NumClasses}");
 
