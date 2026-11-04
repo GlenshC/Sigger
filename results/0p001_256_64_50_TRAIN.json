@@ -1,0 +1,468 @@
+{
+  "Phase": "TRAIN",
+  "Timestamp": "2026-11-04T13:16:47.378",
+  "Hyperparameters": {
+    "LearningRate": 0.001,
+    "HiddenSize": 256,
+    "BatchSize": 64,
+    "Epochs": 50
+  },
+  "Metrics": {
+    "ValidationAccuracy": 0.8873333333333333,
+    "TestAccuracy": 0.8904,
+    "PerClass": [
+      {
+        "Class": "0",
+        "Correct": 954,
+        "Total": 980,
+        "Accuracy": 0.9734693877551021
+      },
+      {
+        "Class": "1",
+        "Correct": 1101,
+        "Total": 1135,
+        "Accuracy": 0.9700440528634361
+      },
+      {
+        "Class": "2",
+        "Correct": 886,
+        "Total": 1032,
+        "Accuracy": 0.8585271317829457
+      },
+      {
+        "Class": "3",
+        "Correct": 883,
+        "Total": 1010,
+        "Accuracy": 0.8742574257425743
+      },
+      {
+        "Class": "4",
+        "Correct": 890,
+        "Total": 982,
+        "Accuracy": 0.9063136456211812
+      },
+      {
+        "Class": "5",
+        "Correct": 685,
+        "Total": 892,
+        "Accuracy": 0.7679372197309418
+      },
+      {
+        "Class": "6",
+        "Correct": 890,
+        "Total": 958,
+        "Accuracy": 0.9290187891440501
+      },
+      {
+        "Class": "7",
+        "Correct": 909,
+        "Total": 1028,
+        "Accuracy": 0.8842412451361867
+      },
+      {
+        "Class": "8",
+        "Correct": 835,
+        "Total": 974,
+        "Accuracy": 0.8572895277207392
+      },
+      {
+        "Class": "9",
+        "Correct": 871,
+        "Total": 1009,
+        "Accuracy": 0.8632309217046581
+      }
+    ]
+  },
+  "Logs": [
+    {
+      "Timestamp": "2026-11-04T12:57:45.577",
+      "Level": "INFO",
+      "Message": "=== Sigger CLI ==="
+    },
+    {
+      "Timestamp": "2026-11-04T12:57:45.585",
+      "Level": "INFO",
+      "Message": "Hyperparams: LR=0.001, Hidden=256, Batch=64, Epochs=50"
+    },
+    {
+      "Timestamp": "2026-11-04T12:57:45.586",
+      "Level": "INFO",
+      "Message": "Loading dataset..."
+    },
+    {
+      "Timestamp": "2026-11-04T12:57:48.805",
+      "Level": "INFO",
+      "Message": "Data loaded in 3219ms:"
+    },
+    {
+      "Timestamp": "2026-11-04T12:57:48.806",
+      "Level": "INFO",
+      "Message": "  Train: 54000 samples"
+    },
+    {
+      "Timestamp": "2026-11-04T12:57:48.806",
+      "Level": "INFO",
+      "Message": "  Val:   6000 samples"
+    },
+    {
+      "Timestamp": "2026-11-04T12:57:48.806",
+      "Level": "INFO",
+      "Message": "  Test:  10000 samples"
+    },
+    {
+      "Timestamp": "2026-11-04T12:57:48.806",
+      "Level": "INFO",
+      "Message": "  Classes: 10"
+    },
+    {
+      "Timestamp": "2026-11-04T12:57:48.820",
+      "Level": "INFO",
+      "Message": "Model created: 784 \u2192 256 \u2192 10"
+    },
+    {
+      "Timestamp": "2026-11-04T12:57:48.820",
+      "Level": "INFO",
+      "Message": "Starting training..."
+    },
+    {
+      "Timestamp": "2026-11-04T12:58:00.113",
+      "Level": "INFO",
+      "Message": "  Epoch 001/50: Loss=2.2926, ValLoss=2.2401"
+    },
+    {
+      "Timestamp": "2026-11-04T12:58:12.939",
+      "Level": "INFO",
+      "Message": "  Epoch 002/50: Loss=2.1939, ValLoss=2.1395"
+    },
+    {
+      "Timestamp": "2026-11-04T12:58:31.008",
+      "Level": "INFO",
+      "Message": "  Epoch 003/50: Loss=2.0931, ValLoss=2.0368"
+    },
+    {
+      "Timestamp": "2026-11-04T12:58:51.327",
+      "Level": "INFO",
+      "Message": "  Epoch 004/50: Loss=1.9909, ValLoss=1.9337"
+    },
+    {
+      "Timestamp": "2026-11-04T12:59:12.256",
+      "Level": "INFO",
+      "Message": "  Epoch 005/50: Loss=1.8880, ValLoss=1.8303"
+    },
+    {
+      "Timestamp": "2026-11-04T12:59:40.684",
+      "Level": "INFO",
+      "Message": "  Epoch 006/50: Loss=1.7848, ValLoss=1.7264"
+    },
+    {
+      "Timestamp": "2026-11-04T13:00:06.131",
+      "Level": "INFO",
+      "Message": "  Epoch 007/50: Loss=1.6815, ValLoss=1.6238"
+    },
+    {
+      "Timestamp": "2026-11-04T13:00:31.678",
+      "Level": "INFO",
+      "Message": "  Epoch 008/50: Loss=1.5801, ValLoss=1.5247"
+    },
+    {
+      "Timestamp": "2026-11-04T13:00:55.883",
+      "Level": "INFO",
+      "Message": "  Epoch 009/50: Loss=1.4832, ValLoss=1.4306"
+    },
+    {
+      "Timestamp": "2026-11-04T13:01:20.469",
+      "Level": "INFO",
+      "Message": "  Epoch 010/50: Loss=1.3927, ValLoss=1.3430"
+    },
+    {
+      "Timestamp": "2026-11-04T13:01:44.004",
+      "Level": "INFO",
+      "Message": "  Epoch 011/50: Loss=1.3091, ValLoss=1.2633"
+    },
+    {
+      "Timestamp": "2026-11-04T13:02:06.618",
+      "Level": "INFO",
+      "Message": "  Epoch 012/50: Loss=1.2337, ValLoss=1.1916"
+    },
+    {
+      "Timestamp": "2026-11-04T13:02:31.225",
+      "Level": "INFO",
+      "Message": "  Epoch 013/50: Loss=1.1661, ValLoss=1.1271"
+    },
+    {
+      "Timestamp": "2026-11-04T13:02:56.548",
+      "Level": "INFO",
+      "Message": "  Epoch 014/50: Loss=1.1054, ValLoss=1.0689"
+    },
+    {
+      "Timestamp": "2026-11-04T13:03:19.242",
+      "Level": "INFO",
+      "Message": "  Epoch 015/50: Loss=1.0504, ValLoss=1.0161"
+    },
+    {
+      "Timestamp": "2026-11-04T13:04:13.339",
+      "Level": "INFO",
+      "Message": "  Epoch 016/50: Loss=1.0004, ValLoss=0.9677"
+    },
+    {
+      "Timestamp": "2026-11-04T13:04:39.507",
+      "Level": "INFO",
+      "Message": "  Epoch 017/50: Loss=0.9545, ValLoss=0.9232"
+    },
+    {
+      "Timestamp": "2026-11-04T13:05:09.112",
+      "Level": "INFO",
+      "Message": "  Epoch 018/50: Loss=0.9123, ValLoss=0.8824"
+    },
+    {
+      "Timestamp": "2026-11-04T13:05:34.934",
+      "Level": "INFO",
+      "Message": "  Epoch 019/50: Loss=0.8740, ValLoss=0.8456"
+    },
+    {
+      "Timestamp": "2026-11-04T13:06:00.256",
+      "Level": "INFO",
+      "Message": "  Epoch 020/50: Loss=0.8399, ValLoss=0.8128"
+    },
+    {
+      "Timestamp": "2026-11-04T13:06:27.374",
+      "Level": "INFO",
+      "Message": "  Epoch 021/50: Loss=0.8093, ValLoss=0.7836"
+    },
+    {
+      "Timestamp": "2026-11-04T13:06:53.901",
+      "Level": "INFO",
+      "Message": "  Epoch 022/50: Loss=0.7821, ValLoss=0.7573"
+    },
+    {
+      "Timestamp": "2026-11-04T13:07:19.081",
+      "Level": "INFO",
+      "Message": "  Epoch 023/50: Loss=0.7574, ValLoss=0.7334"
+    },
+    {
+      "Timestamp": "2026-11-04T13:07:41.071",
+      "Level": "INFO",
+      "Message": "  Epoch 024/50: Loss=0.7349, ValLoss=0.7118"
+    },
+    {
+      "Timestamp": "2026-11-04T13:08:03.115",
+      "Level": "INFO",
+      "Message": "  Epoch 025/50: Loss=0.7145, ValLoss=0.6920"
+    },
+    {
+      "Timestamp": "2026-11-04T13:08:25.088",
+      "Level": "INFO",
+      "Message": "  Epoch 026/50: Loss=0.6959, ValLoss=0.6739"
+    },
+    {
+      "Timestamp": "2026-11-04T13:08:48.166",
+      "Level": "INFO",
+      "Message": "  Epoch 027/50: Loss=0.6788, ValLoss=0.6573"
+    },
+    {
+      "Timestamp": "2026-11-04T13:09:09.936",
+      "Level": "INFO",
+      "Message": "  Epoch 028/50: Loss=0.6632, ValLoss=0.6421"
+    },
+    {
+      "Timestamp": "2026-11-04T13:09:32.189",
+      "Level": "INFO",
+      "Message": "  Epoch 029/50: Loss=0.6486, ValLoss=0.6281"
+    },
+    {
+      "Timestamp": "2026-11-04T13:09:54.326",
+      "Level": "INFO",
+      "Message": "  Epoch 030/50: Loss=0.6353, ValLoss=0.6151"
+    },
+    {
+      "Timestamp": "2026-11-04T13:10:16.110",
+      "Level": "INFO",
+      "Message": "  Epoch 031/50: Loss=0.6229, ValLoss=0.6030"
+    },
+    {
+      "Timestamp": "2026-11-04T13:10:39.400",
+      "Level": "INFO",
+      "Message": "  Epoch 032/50: Loss=0.6113, ValLoss=0.5918"
+    },
+    {
+      "Timestamp": "2026-11-04T13:11:04.535",
+      "Level": "INFO",
+      "Message": "  Epoch 033/50: Loss=0.6006, ValLoss=0.5813"
+    },
+    {
+      "Timestamp": "2026-11-04T13:11:26.116",
+      "Level": "INFO",
+      "Message": "  Epoch 034/50: Loss=0.5906, ValLoss=0.5716"
+    },
+    {
+      "Timestamp": "2026-11-04T13:11:47.659",
+      "Level": "INFO",
+      "Message": "  Epoch 035/50: Loss=0.5812, ValLoss=0.5625"
+    },
+    {
+      "Timestamp": "2026-11-04T13:12:09.711",
+      "Level": "INFO",
+      "Message": "  Epoch 036/50: Loss=0.5724, ValLoss=0.5539"
+    },
+    {
+      "Timestamp": "2026-11-04T13:12:29.007",
+      "Level": "INFO",
+      "Message": "  Epoch 037/50: Loss=0.5642, ValLoss=0.5458"
+    },
+    {
+      "Timestamp": "2026-11-04T13:12:47.589",
+      "Level": "INFO",
+      "Message": "  Epoch 038/50: Loss=0.5563, ValLoss=0.5381"
+    },
+    {
+      "Timestamp": "2026-11-04T13:13:06.132",
+      "Level": "INFO",
+      "Message": "  Epoch 039/50: Loss=0.5489, ValLoss=0.5309"
+    },
+    {
+      "Timestamp": "2026-11-04T13:13:24.912",
+      "Level": "INFO",
+      "Message": "  Epoch 040/50: Loss=0.5419, ValLoss=0.5241"
+    },
+    {
+      "Timestamp": "2026-11-04T13:13:43.527",
+      "Level": "INFO",
+      "Message": "  Epoch 041/50: Loss=0.5353, ValLoss=0.5177"
+    },
+    {
+      "Timestamp": "2026-11-04T13:14:02.285",
+      "Level": "INFO",
+      "Message": "  Epoch 042/50: Loss=0.5291, ValLoss=0.5115"
+    },
+    {
+      "Timestamp": "2026-11-04T13:14:21.038",
+      "Level": "INFO",
+      "Message": "  Epoch 043/50: Loss=0.5231, ValLoss=0.5057"
+    },
+    {
+      "Timestamp": "2026-11-04T13:14:39.403",
+      "Level": "INFO",
+      "Message": "  Epoch 044/50: Loss=0.5174, ValLoss=0.5002"
+    },
+    {
+      "Timestamp": "2026-11-04T13:14:57.806",
+      "Level": "INFO",
+      "Message": "  Epoch 045/50: Loss=0.5121, ValLoss=0.4948"
+    },
+    {
+      "Timestamp": "2026-11-04T13:15:16.432",
+      "Level": "INFO",
+      "Message": "  Epoch 046/50: Loss=0.5069, ValLoss=0.4898"
+    },
+    {
+      "Timestamp": "2026-11-04T13:15:35.538",
+      "Level": "INFO",
+      "Message": "  Epoch 047/50: Loss=0.5019, ValLoss=0.4850"
+    },
+    {
+      "Timestamp": "2026-11-04T13:16:14.487",
+      "Level": "INFO",
+      "Message": "  Epoch 048/50: Loss=0.4972, ValLoss=0.4803"
+    },
+    {
+      "Timestamp": "2026-11-04T13:16:31.720",
+      "Level": "INFO",
+      "Message": "  Epoch 049/50: Loss=0.4927, ValLoss=0.4760"
+    },
+    {
+      "Timestamp": "2026-11-04T13:16:46.382",
+      "Level": "INFO",
+      "Message": "  Epoch 050/50: Loss=0.4884, ValLoss=0.4718"
+    },
+    {
+      "Timestamp": "2026-11-04T13:16:46.383",
+      "Level": "INFO",
+      "Message": "\nTraining complete in 1137.6s"
+    },
+    {
+      "Timestamp": "2026-11-04T13:16:46.384",
+      "Level": "INFO",
+      "Message": "Final loss: 0.4884"
+    },
+    {
+      "Timestamp": "2026-11-04T13:16:46.554",
+      "Level": "INFO",
+      "Message": "Model saved to model_cache\\model_cache_0p001_256_64_50.json"
+    },
+    {
+      "Timestamp": "2026-11-04T13:16:46.554",
+      "Level": "INFO",
+      "Message": ""
+    },
+    {
+      "Timestamp": "2026-11-04T13:16:46.554",
+      "Level": "INFO",
+      "Message": "=== Evaluation ==="
+    },
+    {
+      "Timestamp": "2026-11-04T13:16:46.738",
+      "Level": "INFO",
+      "Message": "Validation Accuracy: 88.73% (in 183ms)"
+    },
+    {
+      "Timestamp": "2026-11-04T13:16:47.042",
+      "Level": "INFO",
+      "Message": "Test Accuracy: 89.04% (in 303ms)"
+    },
+    {
+      "Timestamp": "2026-11-04T13:16:47.373",
+      "Level": "INFO",
+      "Message": "\nPer-Class Test Accuracy:"
+    },
+    {
+      "Timestamp": "2026-11-04T13:16:47.373",
+      "Level": "INFO",
+      "Message": "  0: 954/980 = 97.3%"
+    },
+    {
+      "Timestamp": "2026-11-04T13:16:47.374",
+      "Level": "INFO",
+      "Message": "  1: 1101/1135 = 97.0%"
+    },
+    {
+      "Timestamp": "2026-11-04T13:16:47.375",
+      "Level": "INFO",
+      "Message": "  2: 886/1032 = 85.9%"
+    },
+    {
+      "Timestamp": "2026-11-04T13:16:47.375",
+      "Level": "INFO",
+      "Message": "  3: 883/1010 = 87.4%"
+    },
+    {
+      "Timestamp": "2026-11-04T13:16:47.375",
+      "Level": "INFO",
+      "Message": "  4: 890/982 = 90.6%"
+    },
+    {
+      "Timestamp": "2026-11-04T13:16:47.375",
+      "Level": "INFO",
+      "Message": "  5: 685/892 = 76.8%"
+    },
+    {
+      "Timestamp": "2026-11-04T13:16:47.375",
+      "Level": "INFO",
+      "Message": "  6: 890/958 = 92.9%"
+    },
+    {
+      "Timestamp": "2026-11-04T13:16:47.375",
+      "Level": "INFO",
+      "Message": "  7: 909/1028 = 88.4%"
+    },
+    {
+      "Timestamp": "2026-11-04T13:16:47.376",
+      "Level": "INFO",
+      "Message": "  8: 835/974 = 85.7%"
+    },
+    {
+      "Timestamp": "2026-11-04T13:16:47.377",
+      "Level": "INFO",
+      "Message": "  9: 871/1009 = 86.3%"
+    }
+  ]
+}

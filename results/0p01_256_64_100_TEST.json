@@ -1,0 +1,203 @@
+{
+  "Phase": "TEST",
+  "Timestamp": "2026-11-04T13:27:40.959",
+  "Hyperparameters": {
+    "LearningRate": 0.01,
+    "HiddenSize": 256,
+    "BatchSize": 64,
+    "Epochs": 100
+  },
+  "Metrics": {
+    "ValidationAccuracy": 0.6476666666666666,
+    "TestAccuracy": 0.6446,
+    "PerClass": [
+      {
+        "Class": "0",
+        "Correct": 924,
+        "Total": 980,
+        "Accuracy": 0.9428571428571428
+      },
+      {
+        "Class": "1",
+        "Correct": 1125,
+        "Total": 1135,
+        "Accuracy": 0.9911894273127754
+      },
+      {
+        "Class": "2",
+        "Correct": 722,
+        "Total": 1032,
+        "Accuracy": 0.6996124031007752
+      },
+      {
+        "Class": "3",
+        "Correct": 894,
+        "Total": 1010,
+        "Accuracy": 0.8851485148514852
+      },
+      {
+        "Class": "4",
+        "Correct": 794,
+        "Total": 982,
+        "Accuracy": 0.8085539714867617
+      },
+      {
+        "Class": "5",
+        "Correct": 37,
+        "Total": 892,
+        "Accuracy": 0.04147982062780269
+      },
+      {
+        "Class": "6",
+        "Correct": 850,
+        "Total": 958,
+        "Accuracy": 0.8872651356993737
+      },
+      {
+        "Class": "7",
+        "Correct": 880,
+        "Total": 1028,
+        "Accuracy": 0.8560311284046692
+      },
+      {
+        "Class": "8",
+        "Correct": 0,
+        "Total": 974,
+        "Accuracy": 0
+      },
+      {
+        "Class": "9",
+        "Correct": 220,
+        "Total": 1009,
+        "Accuracy": 0.2180376610505451
+      }
+    ]
+  },
+  "Logs": [
+    {
+      "Timestamp": "2026-11-04T13:27:36.308",
+      "Level": "INFO",
+      "Message": "=== Sigger CLI ==="
+    },
+    {
+      "Timestamp": "2026-11-04T13:27:36.327",
+      "Level": "INFO",
+      "Message": "Hyperparams: LR=0.01, Hidden=256, Batch=64, Epochs=100"
+    },
+    {
+      "Timestamp": "2026-11-04T13:27:36.327",
+      "Level": "INFO",
+      "Message": "Loading dataset..."
+    },
+    {
+      "Timestamp": "2026-11-04T13:27:40.289",
+      "Level": "INFO",
+      "Message": "Data loaded in 3961ms:"
+    },
+    {
+      "Timestamp": "2026-11-04T13:27:40.290",
+      "Level": "INFO",
+      "Message": "  Train: 54000 samples"
+    },
+    {
+      "Timestamp": "2026-11-04T13:27:40.290",
+      "Level": "INFO",
+      "Message": "  Val:   6000 samples"
+    },
+    {
+      "Timestamp": "2026-11-04T13:27:40.290",
+      "Level": "INFO",
+      "Message": "  Test:  10000 samples"
+    },
+    {
+      "Timestamp": "2026-11-04T13:27:40.290",
+      "Level": "INFO",
+      "Message": "  Classes: 10"
+    },
+    {
+      "Timestamp": "2026-11-04T13:27:40.290",
+      "Level": "INFO",
+      "Message": "Loading model from model_cache/model_cache_0p01_128_64_1.json..."
+    },
+    {
+      "Timestamp": "2026-11-04T13:27:40.374",
+      "Level": "INFO",
+      "Message": "Model: 784 \u2192 128 \u2192 10"
+    },
+    {
+      "Timestamp": "2026-11-04T13:27:40.374",
+      "Level": "INFO",
+      "Message": ""
+    },
+    {
+      "Timestamp": "2026-11-04T13:27:40.374",
+      "Level": "INFO",
+      "Message": "=== Evaluation ==="
+    },
+    {
+      "Timestamp": "2026-11-04T13:27:40.583",
+      "Level": "INFO",
+      "Message": "Validation Accuracy: 64.77% (in 208ms)"
+    },
+    {
+      "Timestamp": "2026-11-04T13:27:40.793",
+      "Level": "INFO",
+      "Message": "Test Accuracy: 64.46% (in 209ms)"
+    },
+    {
+      "Timestamp": "2026-11-04T13:27:40.957",
+      "Level": "INFO",
+      "Message": "\nPer-Class Test Accuracy:"
+    },
+    {
+      "Timestamp": "2026-11-04T13:27:40.957",
+      "Level": "INFO",
+      "Message": "  0: 924/980 = 94.3%"
+    },
+    {
+      "Timestamp": "2026-11-04T13:27:40.957",
+      "Level": "INFO",
+      "Message": "  1: 1125/1135 = 99.1%"
+    },
+    {
+      "Timestamp": "2026-11-04T13:27:40.957",
+      "Level": "INFO",
+      "Message": "  2: 722/1032 = 70.0%"
+    },
+    {
+      "Timestamp": "2026-11-04T13:27:40.957",
+      "Level": "INFO",
+      "Message": "  3: 894/1010 = 88.5%"
+    },
+    {
+      "Timestamp": "2026-11-04T13:27:40.957",
+      "Level": "INFO",
+      "Message": "  4: 794/982 = 80.9%"
+    },
+    {
+      "Timestamp": "2026-11-04T13:27:40.957",
+      "Level": "INFO",
+      "Message": "  5: 37/892 = 4.1%"
+    },
+    {
+      "Timestamp": "2026-11-04T13:27:40.957",
+      "Level": "INFO",
+      "Message": "  6: 850/958 = 88.7%"
+    },
+    {
+      "Timestamp": "2026-11-04T13:27:40.957",
+      "Level": "INFO",
+      "Message": "  7: 880/1028 = 85.6%"
+    },
+    {
+      "Timestamp": "2026-11-04T13:27:40.959",
+      "Level": "INFO",
+      "Message": "  8: 0/974 = 0.0%"
+    },
+    {
+      "Timestamp": "2026-11-04T13:27:40.959",
+      "Level": "INFO",
+      "Message": "  9: 220/1009 = 21.8%"
+    }
+  ]
+}
